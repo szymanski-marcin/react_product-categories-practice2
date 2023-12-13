@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 
 import usersFromServer from './api/users';
@@ -15,6 +15,8 @@ import productsFromServer from './api/products';
 export const App = () => {
   const users = usersFromServer;
   const categories = categoriesFromServer;
+  const [selectedUser, setSelectedUser] = useState(null);
+
   const products = productsFromServer.map((product) => {
     const category = categories.find(categ => categ.id === product.categoryId);
     const user = users.find(element => element.id === category.ownerId);
@@ -25,6 +27,10 @@ export const App = () => {
       user,
     };
   });
+
+  const filteredProducts = selectedUser
+    ? products.filter(product => product.user.id === selectedUser.id)
+    : products;
 
   return (
     <div className="section">
@@ -39,31 +45,22 @@ export const App = () => {
               <a
                 data-cy="FilterAllUsers"
                 href="#/"
+                className={selectedUser === null ? 'is-active' : ''}
+                onClick={() => setSelectedUser(null)}
               >
                 All
               </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 1
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-                className="is-active"
-              >
-                User 2
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 3
-              </a>
+              {users.map(user => (
+                <a
+                  key={user.id}
+                  data-cy={`FilterUser${user.id}`}
+                  href="#/"
+                  className={selectedUser === user ? 'is-active' : ''}
+                  onClick={() => setSelectedUser(user)}
+                >
+                  {user.name}
+                </a>
+              ))}
             </p>
 
             <div className="panel-block">
@@ -206,7 +203,7 @@ export const App = () => {
             </thead>
 
             <tbody>
-              {products.map(product => (
+              {filteredProducts.map(product => (
                 <tr key={product.id} data-cy="Product">
                   <td className="has-text-weight-bold" data-cy="ProductId">
                     {product.id}
@@ -226,7 +223,8 @@ export const App = () => {
                     data-cy="ProductUser"
                     className={product.user.sex === 'm'
                       ? 'has-text-link'
-                      : 'has-text-danger'}
+                      : 'has-text-danger'
+                  }
                   >
                     {product.user.name}
                   </td>
