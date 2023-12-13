@@ -16,6 +16,7 @@ export const App = () => {
   const users = usersFromServer;
   const categories = categoriesFromServer;
   const [selectedUser, setSelectedUser] = useState(null);
+  const [searchValue, setSearchValue] = useState('');
 
   const products = productsFromServer.map((product) => {
     const category = categories.find(categ => categ.id === product.categoryId);
@@ -28,9 +29,13 @@ export const App = () => {
     };
   });
 
-  const filteredProducts = selectedUser
-    ? products.filter(product => product.user.id === selectedUser.id)
-    : products;
+  const filteredProducts = products.filter((product) => {
+    const productFilterInput = searchValue
+      ? product.name.toLowerCase().includes(searchValue.toLowerCase())
+      : true;
+
+    return productFilterInput;
+  });
 
   return (
     <div className="section">
@@ -69,22 +74,25 @@ export const App = () => {
                   data-cy="SearchField"
                   type="text"
                   className="input"
-                  placeholder="Search"
-                  value="qwe"
+                  placeholder="Search by product"
+                  value={searchValue}
+                  onChange={e => setSearchValue(e.target.value)}
                 />
 
                 <span className="icon is-left">
                   <i className="fas fa-search" aria-hidden="true" />
                 </span>
 
+                {searchValue && (
                 <span className="icon is-right">
-                  {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                   <button
-                    data-cy="ClearButton"
+                    data-cy="ClearButtonProduct"
                     type="button"
                     className="delete"
+                    onClick={() => setSearchValue('')}
                   />
                 </span>
+                )}
               </p>
             </div>
 
@@ -223,8 +231,7 @@ export const App = () => {
                     data-cy="ProductUser"
                     className={product.user.sex === 'm'
                       ? 'has-text-link'
-                      : 'has-text-danger'
-                  }
+                      : 'has-text-danger'}
                   >
                     {product.user.name}
                   </td>
