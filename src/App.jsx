@@ -34,7 +34,11 @@ export const App = () => {
       ? product.name.toLowerCase().includes(searchValue.toLowerCase())
       : true;
 
-    return productFilterInput;
+    const userFilterInput = selectedUser
+      ? product.user === selectedUser
+      : true;
+
+    return productFilterInput && userFilterInput;
   });
 
   return (
@@ -104,39 +108,17 @@ export const App = () => {
               >
                 All
               </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 1
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 2
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 3
-              </a>
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 4
-              </a>
+              {categories.map(category => (
+                <a
+                  data-cy="Category"
+                  value={category.title}
+                  className="button mr-2 my-1 is-info"
+                  href="#/"
+                >
+                  {category.title}
+                </a>
+              ))}
             </div>
-
             <div className="panel-block">
               <a
                 data-cy="ResetAllButton"
@@ -150,10 +132,11 @@ export const App = () => {
         </div>
 
         <div className="box table-container">
+          {filteredProducts.length === 0 && (
           <p data-cy="NoMatchingMessage">
             No products matching selected criteria
           </p>
-
+          )}
           <table
             data-cy="ProductTable"
             className="table is-striped is-narrow is-fullwidth"
