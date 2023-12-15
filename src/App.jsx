@@ -29,6 +29,11 @@ export const App = () => {
     };
   });
 
+  const handleFilterReset = () => {
+    setSelectedUser(null);
+    setSearchValue('');
+  };
+
   const filteredProducts = products.filter((product) => {
     const productFilterInput = searchValue
       ? product.name.toLowerCase().includes(searchValue.toLowerCase())
@@ -124,6 +129,7 @@ export const App = () => {
                 data-cy="ResetAllButton"
                 href="#/"
                 className="button is-link is-outlined is-fullwidth"
+                onClick={handleFilterReset}
               >
                 Reset all filters
               </a>
